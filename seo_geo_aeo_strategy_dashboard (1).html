@@ -1,0 +1,179 @@
+
+<style>
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.sf{background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary)}
+.st{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 14px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--color-text-secondary);transition:background .15s}
+.st.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
+@media(max-width:680px){.sg{grid-template-columns:1fr}}
+</style>
+<div style="padding:1rem 0;font-family:var(--font-sans)">
+
+<div style="margin-bottom:20px;padding-bottom:16px;border-bottom:0.5px solid var(--color-border-tertiary)">
+  <h2 style="font-size:20px;font-weight:500;margin:0 0 4px;color:var(--color-text-primary)">Organic search strategy dashboard</h2>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin:0">SEO · GEO · AEO — Birdies · Taft · Journee · Q2 2025 VP review</p>
+</div>
+
+<div id="stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px"></div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+  <button class="st on" onclick="go('all',this)">All brands</button>
+  <button class="st" onclick="go('birdies',this)">Birdies</button>
+  <button class="st" onclick="go('taft',this)">Taft</button>
+  <button class="st" onclick="go('journee',this)">Journee</button>
+</div>
+
+<div id="legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)"></div>
+
+<div id="bnote" style="display:none;margin-bottom:16px;padding:10px 14px;border-left:3px solid #7a3fa0;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-secondary);font-size:13px;color:var(--color-text-secondary)"></div>
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+  <span style="font-size:15px;font-weight:500;color:var(--color-text-primary)">What we're already doing</span>
+  <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500">Active</span>
+  <span id="ac" style="font-size:12px;color:var(--color-text-secondary)"></span>
+</div>
+<div id="ag" class="sg"></div>
+<div id="ae" style="display:none;padding:18px;text-align:center;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);font-size:13px;color:var(--color-text-secondary);background:var(--color-background-secondary)">No active strategies yet for this brand — all work kicks off in the launching phase below.</div>
+
+<div style="border-top:0.5px solid var(--color-border-tertiary);margin:24px 0"></div>
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+  <span style="font-size:15px;font-weight:500;color:var(--color-text-primary)">What we're launching</span>
+  <span style="background:#f3e5f5;color:#7a3fa0;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500">In progress</span>
+  <span id="lc" style="font-size:12px;color:var(--color-text-secondary)"></span>
+</div>
+<div id="lg" class="sg"></div>
+
+</div>
+<script>
+const P={deep:'#130320',dark:'#3d0c5a',mid:'#7a3fa0',mauve:'#c07ab3',blush:'#e8c8de',lt:'#f5eefa'};
+const BN={
+  birdies:{c:'#7a3fa0',bg:'#f0e8f8',l:'Birdies',note:'Supported by Webtek — dedicated SEO agency managing collection meta, blogs, backlinking, and technical strategy for Birdies.'},
+  taft:{c:'#3d0c5a',bg:'#ede3f5',l:'Taft',note:'No dedicated SEO team. Mirroring the Webtek playbook internally — same tactics, PM-led execution.'},
+  journee:{c:'#c07ab3',bg:'#f8eef5',l:'Journee',note:'No dedicated SEO team. Mirroring the Webtek playbook internally + internal reviews program with keyword prompts unique to Journee.'}
+};
+const TY={
+  seo:{l:'SEO',bg:'#ede7f6',c:'#5e35b1'},
+  geo:{l:'GEO',bg:'#ddeeff',c:'#1565c0'},
+  aeo:{l:'AEO',bg:'#fff8e1',c:'#b35a00'},
+  content:{l:'Content',bg:'#e8f5e9',c:'#1b6b2a'},
+  tech:{l:'Technical',bg:'#e0f2f1',c:'#006655'},
+  ops:{l:'Operations',bg:'#fce4ec',c:'#9c1b4a'}
+};
+const S=[
+  {id:'cmeta',name:'Collection page meta optimization',ty:['seo'],brands:['birdies','taft','journee'],st:{birdies:'active',taft:'launch',journee:'launch'},own:{birdies:'Webtek',taft:'Internal PM',journee:'Internal PM'},desc:'Expandable meta fields on collection pages targeting non-branded, high-intent keywords. Webtek executes for Birdies; Taft and Journee mirror the same playbook internally.',freq:'Monthly + new collections at launch',impact:4,time:'3–5 months',tp:55,adj:'Collections still ranking page 3+ after 90 days → revise keyword targeting or expand content depth',data:['Google Search Console','Ahrefs','Webtek monthly report']},
+  {id:'blog',name:'Blog content & backlinking',ty:['content'],brands:['birdies','taft','journee'],st:{birdies:'active',taft:'launch',journee:'launch'},own:{birdies:'Webtek',taft:'Internal PM',journee:'Internal PM'},desc:'Seasonal and long-tail niche blog posts with editorial backlink outreach. Targets purchase-intent queries and builds domain authority over time.',freq:'2× per month (blog) · Monthly (outreach)',impact:5,time:'4–8 months',tp:70,adj:'Target keyword CTR < 1% after 120 days → rework content angle, update title tags, boost with internal linking',data:['Google Search Console','Ahrefs (DR + backlinks)','GA4 (blog → conversion)']},
+  {id:'pdp',name:'SEO + GEO rich PDP sections',ty:['seo','geo'],brands:['birdies','taft','journee'],st:{birdies:'active',taft:'launch',journee:'launch'},own:{birdies:'Webtek + PM',taft:'Internal PM',journee:'Internal PM'},desc:'Every PDP includes structured rich-content sections optimized for both traditional search and AI generative answer engines — covering use cases, comparisons, and long-tail descriptors.',freq:'Every new PDP at launch · Quarterly audit of existing',impact:4,time:'2–4 months',tp:40,adj:'PDP impressions flat in GSC after 60 days → audit crawlability, deepen content, add FAQ section',data:['Google Search Console (PDP impressions)','GA4 (organic PDP sessions)']},
+  {id:'tracker',name:'SEO performance tracker',ty:['ops'],brands:['birdies','taft','journee'],st:{birdies:'active',taft:'launch',journee:'launch'},own:{birdies:'PM + Webtek',taft:'Internal PM',journee:'Internal PM'},desc:'Google Sheets OS tracking Webtek deliverables, keyword rankings, content calendar, and action item aging — adapted from Birdies\'s Webtek tracker for Taft and Journee internal use.',freq:'Weekly review (Monday cadence)',impact:2,time:'Immediate (operational)',tp:5,adj:'Action items aging > 14 days → escalate or reassign; rankings declining 2 consecutive weeks → trigger strategy review',data:['Webtek monthly reports','GSC exports','Ahrefs rank tracking']},
+  {id:'schema',name:'Structured data & schema markup',ty:['tech','geo'],brands:['birdies','taft','journee'],st:{birdies:'launch',taft:'launch',journee:'launch'},own:{birdies:'Dev + Webtek',taft:'Dev + PM',journee:'Dev + PM'},desc:'JSON-LD schema (Product, FAQ, BreadcrumbList, Organization) across all sites — foundational signal for AI search engines including ChatGPT, Perplexity, and Gemini.',freq:'One-time implementation · Quarterly validation audit',impact:4,time:'1–3 months',tp:25,adj:'Rich results absent in GSC after 90 days → validate via Rich Results Test, expand schema coverage to missing page types',data:['Google Search Console (rich results)','Google Rich Results Test','Ahrefs']},
+  {id:'faq',name:'AEO: FAQ sections on PDPs & collections',ty:['aeo','seo'],brands:['birdies','taft','journee'],st:{birdies:'launch',taft:'launch',journee:'launch'},own:{birdies:'Webtek + PM',taft:'Internal PM',journee:'Internal PM'},desc:'Structured FAQ sections with question-based H2s targeting "best [product] for [occasion/need]" queries — built for featured snippet capture and AI answer box extraction.',freq:'Per new PDP/collection · Quarterly refresh of existing',impact:3,time:'2–4 months',tp:38,adj:'Featured snippet impressions not growing after 90 days → revise questions, shorten answers, validate schema',data:['Google Search Console (snippets)','Ahrefs SERP tracking']},
+  {id:'rvw',name:'Non-branded keyword prompts in review requests',ty:['aeo'],brands:['taft','journee'],st:{taft:'launch',journee:'launch'},own:{taft:'PM + Email team',journee:'PM + Email team'},desc:'Review request emails surface suggested non-branded keyword phrases before customers write — seeding search-relevant language into UGC that feeds AEO ranking signals.',freq:'Every review request email (ongoing)',impact:3,time:'2–3 months',tp:28,adj:'Review keyword density not improving after 60 days → A/B test prompt language and keyword suggestions',data:['Review platform analytics','GSC (non-brand keyword share)']},
+  {id:'int',name:'Internal reviews program with keyword prompts',ty:['aeo'],brands:['journee'],st:{journee:'launch'},own:{journee:'Internal PM'},desc:'Dedicated internal reviewer program generating product reviews using guided non-branded keyword prompts — builds early keyword coverage and review velocity on new PDPs before external reviews accumulate.',freq:'Weekly internal reviewer batch',impact:3,time:'1–3 months',tp:22,adj:'Review volume or coverage stagnant after 30 days → expand reviewer pool or refresh prompt templates',data:['Review platform analytics','GSC brand vs non-brand keyword share']},
+  {id:'aim',name:'AI brand presence monitoring',ty:['geo'],brands:['birdies','taft','journee'],st:{birdies:'launch',taft:'launch',journee:'launch'},own:{birdies:'PM + Webtek',taft:'Internal PM',journee:'Internal PM'},desc:'Monthly audits of brand visibility in ChatGPT, Perplexity, and Gemini for target product and category queries — surfaces gaps in generative search coverage and informs content sprints.',freq:'Monthly',impact:2,time:'Ongoing signal',tp:88,adj:'Brand absent from AI results for core category queries → trigger content + schema sprint within 30 days',data:['Manual AI prompt testing (ChatGPT, Perplexity, Gemini)','Otterly.ai or similar GEO tool']},
+  {id:'cwv',name:'Core Web Vitals monitoring',ty:['tech'],brands:['birdies','taft','journee'],st:{birdies:'launch',taft:'launch',journee:'launch'},own:{birdies:'Dev + Webtek',taft:'Dev + PM',journee:'Dev + PM'},desc:'Monthly Lighthouse and CWV audits ensuring LCP, CLS, and INP stay in Google\'s "good" range — prerequisite for rankings and AI crawler accessibility.',freq:'Monthly · Dev sprint if any metric drops below 75',impact:4,time:'1–2 months post-fix',tp:16,adj:'Any CWV score drops below 75 → escalate to dev sprint within the current cycle',data:['Google PageSpeed Insights','Lighthouse','GSC Core Web Vitals report']}
+];
+
+const ILB=['','Very low','Low','Medium','High','Very high'];
+
+function dots(n){
+  const cols=['#e8c8de','#c07ab3','#9b68b8','#7a3fa0','#3d0c5a'];
+  let h='<span style="display:inline-flex;gap:3px;align-items:center">';
+  for(let i=1;i<=5;i++) h+=`<span style="width:8px;height:8px;border-radius:50%;background:${i<=n?cols[i-1]:'var(--color-border-tertiary)'};flex-shrink:0;display:block"></span>`;
+  return h+`<span style="font-size:11px;color:var(--color-text-secondary);margin-left:5px">${ILB[n]}</span></span>`;
+}
+
+function tbar(tp,label){
+  return `<div style="background:var(--color-border-tertiary);border-radius:3px;height:5px;position:relative;margin:4px 0 2px">
+    <div style="position:absolute;left:0;top:0;height:100%;width:${tp}%;background:${P.mid};opacity:0.4;border-radius:3px"></div>
+    <div style="position:absolute;top:50%;left:${tp}%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:${P.dark};border:2px solid var(--color-background-primary)"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-secondary)"><span>Immediate</span><span style="font-weight:500;color:var(--color-text-primary)">${label}</span><span>12+ mo</span></div>`;
+}
+
+function card(s,brand){
+  const chips = (brand==='all'?s.brands:[brand]).map(b=>{
+    const isA = s.st[b]==='active';
+    return `<span style="border-radius:20px;font-size:11px;padding:2px 8px;font-weight:500;white-space:nowrap;${isA?`background:${BN[b].c};color:#f5eefa`:`background:${BN[b].bg};color:${BN[b].c};border:0.5px solid ${BN[b].c}`}">${BN[b].l}${isA?' ✓':' →'}</span>`;
+  }).join('');
+  const tags = s.ty.map(t=>`<span style="border-radius:4px;font-size:11px;padding:2px 6px;font-weight:500;white-space:nowrap;background:${TY[t].bg};color:${TY[t].c}">${TY[t].l}</span>`).join('');
+  const ownArr = brand==='all'?[...new Set(Object.values(s.own))]:[s.own[brand]];
+  const ac = brand==='all'?P.mid:BN[brand].c;
+  return `<div class="sc">
+    <div style="height:3px;background:${ac}"></div>
+    <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.3">${s.name}</div>
+        <div style="display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">${tags}</div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${chips}</div>
+      <div style="font-size:12.5px;color:var(--color-text-secondary);line-height:1.55">${s.desc}</div>
+      <div style="display:flex;align-items:flex-start;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${P.mid}" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span style="font-size:12px;color:var(--color-text-secondary)">${s.freq}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px">Impact</div>${dots(s.impact)}</div>
+        <div><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px">Time to results</div>${tbar(s.tp,s.time)}</div>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-secondary)">Owner: <span style="color:var(--color-text-primary)">${ownArr.join(' · ')}</span></div>
+    </div>
+    <div class="sf" style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:11px;color:var(--color-text-secondary);min-width:70px;flex-shrink:0;padding-top:1px">Adjust when</span>
+        <span style="font-size:12px;color:var(--color-text-secondary);line-height:1.5">${s.adj}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:11px;color:var(--color-text-secondary);min-width:70px;flex-shrink:0;padding-top:2px">Data sources</span>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${s.data.map(d=>`<span style="font-size:11px;padding:2px 6px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;color:var(--color-text-secondary)">${d}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function gActive(b){
+  if(b==='all') return S.filter(s=>s.brands.some(x=>s.st[x]==='active'));
+  return S.filter(s=>s.brands.includes(b)&&s.st[b]==='active');
+}
+function gLaunch(b){
+  if(b==='all') return S.filter(s=>!s.brands.some(x=>s.st[x]==='active'));
+  return S.filter(s=>s.brands.includes(b)&&s.st[b]==='launch');
+}
+
+function go(brand,btn){
+  document.querySelectorAll('.st').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const note=document.getElementById('bnote');
+  if(brand!=='all'){note.style.display='block';note.innerHTML=`<strong style="color:var(--color-text-primary)">${BN[brand].l}</strong> — ${BN[brand].note}`;}
+  else note.style.display='none';
+
+  const all=brand==='all'?S:S.filter(s=>s.brands.includes(brand));
+  const act=gActive(brand), lnch=gLaunch(brand);
+
+  document.getElementById('stats').innerHTML=[
+    {l:'Total strategies',v:all.length},
+    {l:'Active now',v:act.length},
+    {l:'Launching',v:lnch.length},
+    {l:'SEO support',v:brand==='birdies'?'Webtek':brand==='all'?'3 brands':'Internal PM',txt:true}
+  ].map(it=>`<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;border:0.5px solid var(--color-border-tertiary)">
+    <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px">${it.l}</div>
+    <div style="font-size:${it.txt?'13px':'22px'};font-weight:500;color:var(--color-text-primary);line-height:1.1">${it.v}</div>
+  </div>`).join('');
+
+  const ag=document.getElementById('ag'),ae=document.getElementById('ae');
+  if(act.length){ag.style.display='grid';ae.style.display='none';ag.innerHTML=act.map(s=>card(s,brand)).join('');}
+  else{ag.style.display='none';ae.style.display='block';}
+  document.getElementById('ac').textContent=act.length+' '+(act.length===1?'strategy':'strategies');
+
+  document.getElementById('lg').innerHTML=gLaunch(brand).map(s=>card(s,brand)).join('');
+  document.getElementById('lc').textContent=lnch.length+' '+(lnch.length===1?'strategy':'strategies');
+}
+
+document.getElementById('legend').innerHTML=`
+  <span style="font-size:11px;color:var(--color-text-secondary);font-weight:500;margin-right:4px">Type:</span>
+  ${Object.entries(TY).map(([k,t])=>`<span style="font-size:11px;padding:2px 7px;border-radius:4px;background:${t.bg};color:${t.c};font-weight:500">${t.l}</span>`).join('')}
+  <span style="font-size:11px;color:var(--color-text-secondary);font-weight:500;margin-left:8px;margin-right:4px">Brand:</span>
+  <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#7a3fa0;color:#f5eefa;font-weight:500">Brand ✓ active</span>
+  <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f5eefa;color:#7a3fa0;border:0.5px solid #7a3fa0;font-weight:500">Brand → launching</span>`;
+
+go('all',document.querySelector('.st.on'));
+</script>
